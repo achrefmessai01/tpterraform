@@ -39,13 +39,9 @@ resource "docker_container" "db_container" {
 
 # --- 2. Ressource : Application Web Nginx ---
 
-# Construit l'image de l'application à partir du Dockerfile_app local
+# Utilise l'image de l'application construite dans le pipeline
 resource "docker_image" "app_image" {
-  name = "tp-web-app:latest"
-  build {
-    context = "."
-    dockerfile = "Dockerfile_app"
-  }
+  name         = "tp-web-app:latest"
   keep_locally = false
 }
 
