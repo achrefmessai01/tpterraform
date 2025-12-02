@@ -6,6 +6,10 @@ terraform {
       source  = "terraform-providers/docker"
       version = "~> 2.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -39,10 +43,23 @@ resource "docker_container" "db_container" {
 
 # --- 2. Ressource : Application Web Nginx ---
 
-# Utilise l'image de l'application construite dans le pipeline
+# Construit l'image Docker via null_resource
+resource "null_resource" "build_app_image" {
+  triggers = {
+    dockerfile_hash = filemd5("${path.module}/Dockerfile_app")
+  }
+
+  provisioner "local-exec" {
+    command = "docker build -f Dockerfile_app -t tp-web-app:latest ."
+  }
+}
+
+# Référence l'image construite
 resource "docker_image" "app_image" {
   name         = "tp-web-app:latest"
-  keep_locally = false
+  keep_locally = true
+
+  depends_on = [null_resource.build_app_image]
 }
 
 # Crée le conteneur de l'application web
