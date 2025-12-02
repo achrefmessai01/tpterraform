@@ -22,7 +22,7 @@ resource "docker_image" "postgres_image" {
 # Crée et configure le conteneur PostgreSQL
 resource "docker_container" "db_container" {
   name  = "tp-db-postgres"
-  image = docker_image.postgres_image.image_id
+  image = docker_image.postgres_image.latest
 
   ports {
     internal = 5432
@@ -48,7 +48,7 @@ resource "docker_image" "app_image" {
 # Crée le conteneur de l'application web
 resource "docker_container" "app_container" {
   name  = "tp-app-web"
-  image = docker_image.app_image.image_id
+  image = docker_image.app_image.latest
 
   # Dépendance explicite : la DB doit être prête avant l'Application
   depends_on = [
